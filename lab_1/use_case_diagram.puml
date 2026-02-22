@@ -1,0 +1,24 @@
+@startuml
+left to right direction
+actor "Client" as Client
+actor "Operator" as Operator
+actor "Administrator" as Admin
+
+rectangle "HubSpot Conversations" {
+  usecase "Create Conversation" as UC1
+  usecase "Send Message" as UC2
+  usecase "Assign Operator" as UC3
+  usecase "Transfer to Another Operator" as UC4
+  usecase "Close Conversation" as UC5
+  usecase "View History" as UC6
+}
+
+Client --> UC1
+Client --> UC2
+Operator --> UC2
+Operator --> UC3
+Operator --> UC4
+Operator --> UC5
+Admin --> UC3
+Admin --> UC6
+@enduml

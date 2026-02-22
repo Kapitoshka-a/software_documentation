@@ -1,0 +1,45 @@
+
+@startuml
+abstract class User {
+  - id: int
+  - name: String
+  - email: String
+  + getDetails(): String
+}
+
+class Client {
+  - companyName: String
+  + getDetails(): String
+  + startConversation(): void
+}
+
+class Operator {
+  - department: String
+  - status: String
+  + getDetails(): String
+  + assignConversation(c: Conversation): void
+  + resolveConversation(c: Conversation): void
+}
+
+class Conversation {
+  - conversationId: int
+  - status: String
+  - createdAt: Date
+  + addMessage(m: Message): void
+  + changeStatus(newStatus: String): void
+  + transferTo(o: Operator): void
+}
+
+class Message {
+  - messageId: int
+  - content: String
+  - timestamp: Date
+  + send(): void
+}
+
+User <|-- Client
+User <|-- Operator
+Conversation "1" *-- "many" Message
+Client "1" -- "many" Conversation
+Operator "1" -- "many" Conversation
+@enduml

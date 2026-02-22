@@ -1,0 +1,15 @@
+@startuml
+start
+:Client sends a message;
+:System creates a new Conversation;
+if (Is an operator available?) then (Yes)
+  :System assigns Conversation to the operator;
+else (No)
+  :Conversation is added to the queue;
+  :Wait for an available operator;
+  :Assign to an operator;
+endif
+:Operator receives a notification;
+:Operator starts working on the Conversation;
+stop
+@enduml
