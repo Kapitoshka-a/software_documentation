@@ -1,6 +1,7 @@
 @startuml
 left to right direction
 actor "Client" as Client
+actor "Chatbot" as Bot
 actor "Operator" as Operator
 actor "Administrator" as Admin
 
@@ -15,6 +16,8 @@ rectangle "HubSpot Conversations" {
 
 Client --> UC1
 Client --> UC2
+Bot --> UC2
+Bot --> UC3
 Operator --> UC2
 Operator --> UC3
 Operator --> UC4

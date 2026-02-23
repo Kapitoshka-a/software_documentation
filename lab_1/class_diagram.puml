@@ -1,45 +1,60 @@
-
 @startuml
 abstract class User {
-  - id: int
-  - name: String
-  - email: String
-  + getDetails(): String
+- id: UUID
+- name: String
+- email: String
+- createdAt: DateTime
++ getDetails(): String
++ updateContactInfo(): void
 }
-
 class Client {
-  - companyName: String
-  + getDetails(): String
-  + startConversation(): void
+- companyName: String
+- hubspotScore: Integer
+- subscriptionTier: String
++ getDetails(): String
++ initiateConversation(): Conversation
++ submitFeedback(): void
 }
-
 class Operator {
-  - department: String
-  - status: String
-  + getDetails(): String
-  + assignConversation(c: Conversation): void
-  + resolveConversation(c: Conversation): void
+- operatorId: String
+- department: String
+- currentStatus: String
+- maxConcurrentChats: Integer
++ getDetails(): String
++ assignConversation(c: Conversation): Boolean
++ transferConversation(c: Conversation, target: Operator): void
++ resolveConversation(c: Conversation): void
 }
-
 class Conversation {
-  - conversationId: int
-  - status: String
-  - createdAt: Date
-  + addMessage(m: Message): void
-  + changeStatus(newStatus: String): void
-  + transferTo(o: Operator): void
+- conversationId: UUID
+- status: String
+- priority: String
+- startedAt: DateTime
+- closedAt: DateTime
++ addMessage(msg: Message): void
++ changeStatus(newStatus: String): void
++ assignTo(operator: Operator): void
++ generateTranscript(): String
 }
-
 class Message {
-  - messageId: int
-  - content: String
-  - timestamp: Date
-  + send(): void
+- messageId: UUID
+- content: String
+- timestamp: DateTime
+- isRead: Boolean
++ markAsRead(): void
++ editMessage(newContent: String): void
 }
-
+class Attachment {
+- fileId: UUID
+- fileName: String
+- fileSize: Long
+- fileType: String
++ download(): void
+}
 User <|-- Client
 User <|-- Operator
-Conversation "1" *-- "many" Message
-Client "1" -- "many" Conversation
-Operator "1" -- "many" Conversation
+Client "1" -- "0..*" Conversation : initiates
+Operator "1" -- "0..*" Conversation : handles
+Conversation "1" *-- "1..*" Message : contains
+Message "1" *-- "0..*" Attachment : includes
 @enduml
