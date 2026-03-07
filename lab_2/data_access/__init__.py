@@ -1,5 +1,5 @@
 from data_access.csv_source import CsvFileDataSource
-from data_access.repository import SqlRepository
+from data_access.import_repository import ImportRepository
 from data_access.user_repository import UserRepository
 from data_access.client_repository import ClientRepository
 from data_access.operator_repository import OperatorRepository
@@ -10,7 +10,7 @@ from core.interfaces import CsvDataSourceInterface, RepositoryInterface
 
 __all__ = [
     "CsvFileDataSource",
-    "SqlRepository",
+    "ImportRepository",
     "CsvDataSourceInterface",
     "RepositoryInterface",
     "UserRepository",

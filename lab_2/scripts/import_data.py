@@ -1,7 +1,7 @@
 import argparse
 
 from core.config import settings
-from data_access import CsvFileDataSource, SqlRepository
+from data_access import CsvFileDataSource, ImportRepository
 from controllers import ImportController
 
 
@@ -11,7 +11,7 @@ def main() -> None:
     args = parser.parse_args()
 
     for session in settings.get_sqlite_session():
-        controller = ImportController(CsvFileDataSource(), SqlRepository(session))
+        controller = ImportController(CsvFileDataSource(), ImportRepository(session))
         result = controller.import_from_csv(args.csv)
         print(result.model_dump())
         break

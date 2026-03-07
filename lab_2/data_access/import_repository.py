@@ -4,7 +4,7 @@ from serializers.import_bundle import ImportBundle
 from core.interfaces import RepositoryInterface
 
 
-class SqlRepository(RepositoryInterface):
+class ImportRepository(RepositoryInterface):
     def __init__(self, session: Session) -> None:
         self._session = session
 
