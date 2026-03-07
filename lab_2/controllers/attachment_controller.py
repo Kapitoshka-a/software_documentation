@@ -30,22 +30,7 @@ class AttachmentController:
             raise ValueError("Attachment not found")
         return attachment
 
-    def update_attachment(
-        self,
-        attachment_id: UUID,
-        file_name: str | None = None,
-        file_size: int | None = None,
-        file_type: str | None = None,
-    ) -> Attachment:
-        attachment = self._attachment_repository.get(attachment_id)
-        if attachment is None:
-            raise ValueError("Attachment not found")
-        if file_name is not None:
-            attachment.file_name = file_name
-        if file_size is not None:
-            attachment.file_size = file_size
-        if file_type is not None:
-            attachment.file_type = file_type
+    def update_attachment(self, attachment: Attachment) -> Attachment:
         return self._attachment_repository.update(attachment)
 
     def list_attachments(self, message_id: UUID) -> list[Attachment]:
