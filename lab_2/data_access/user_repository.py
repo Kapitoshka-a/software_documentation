@@ -1,5 +1,3 @@
-from uuid import UUID
-
 from sqlmodel import Session, select
 
 from core.errors import EntityNotFoundError, UserEmailAlreadyExistsError
@@ -20,14 +18,21 @@ class UserRepository(UserRepositoryInterface):
         self._session.refresh(user)
         return user
 
-    def get(self, user_id: UUID | None = None, offset: int = 1, limit: int = 100) -> User | list[User]:
-        statement = select(User)
-        if user_id:
-            statement = statement.where(User.id == user_id)
-            user = self._session.exec(statement).first()
-            if not user:
-                raise EntityNotFoundError("User", user_id)
-            return user
+    def get(
+            self,
+            name: str | None = None,
+            user_id: str | None = None,
+            offset: int = 1,
+            limit: int = 100
+    ) -> User | list[User]:
+        statement = select(User).where(*(
+            User.is_deleted == False,
+            User.name == name if name else True,
+            User.id == user_id if user_id else True
+        ))
+        if user_id or name:
+            return self._session.exec(statement).first()
+
         statement = statement.offset((offset - 1) * limit).limit(limit)
         return list(self._session.exec(statement).all())
 
@@ -45,9 +50,9 @@ class UserRepository(UserRepositoryInterface):
         self._session.refresh(merged)
         return merged
 
-    def delete(self, user_id: UUID) -> None:
+    def delete(self, user_id: str) -> None:
         user = self._session.get(User, user_id)
         if user is None:
             raise EntityNotFoundError("User", user_id)
-        self._session.delete(user)
+        user.is_deleted = True
         self._session.commit()

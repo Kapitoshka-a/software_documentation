@@ -1,5 +1,3 @@
-from uuid import UUID
-
 from sqlmodel import Session, select
 
 from core.errors import EntityNotFoundError, EntityAlreadyExistsError
@@ -21,15 +19,24 @@ class ConversationRepository(ConversationRepositoryInterface):
         return conversation
 
     def get(
-        self, conversation_id: UUID | None = None, offset: int = 1, limit: int = 100
+        self,
+        conversation_id: str | None = None,
+        operator_id: str | None = None,
+        client_id: str | None = None,
+        is_unassigned: bool = False,
+        offset: int = 1,
+        limit: int = 100
     ) -> Conversation | list[Conversation]:
-        statement = select(Conversation)
+        statement = select(Conversation).where(*(
+            Conversation.id == conversation_id if conversation_id else True,
+            Conversation.operator_id == operator_id if operator_id else True,
+            Conversation.client_id == client_id if client_id else True,
+            Conversation.operator_id.is_(None) if is_unassigned else True
+        ))
         if conversation_id:
-            statement = statement.where(Conversation.id == conversation_id)
             conversation = self._session.exec(statement).first()
-            if not conversation:
-                raise EntityNotFoundError("Conversation", conversation_id)
             return conversation
+
         statement = statement.offset((offset - 1) * limit).limit(limit)
         return list(self._session.exec(statement).all())
 
@@ -42,7 +49,7 @@ class ConversationRepository(ConversationRepositoryInterface):
         self._session.refresh(merged)
         return merged
 
-    def delete(self, conversation_id: UUID) -> None:
+    def delete(self, conversation_id: str) -> None:
         conversation = self._session.get(Conversation, conversation_id)
         if conversation is None:
             raise EntityNotFoundError("Conversation", conversation_id)

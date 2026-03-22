@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Generic, TypeVar
-from uuid import UUID
 from abc import ABC, abstractmethod
 from typing import Mapping
 
@@ -38,10 +37,6 @@ class CrudRepositoryInterface(ABC, Generic[T, ID]):
     def update(self, entity: T) -> T:
         raise NotImplementedError
 
-    @abstractmethod
-    def delete(self, entity_id: ID) -> None:
-        raise NotImplementedError
-
 
 class ReadCreateRepositoryInterface(ABC, Generic[T, ID]):
     @abstractmethod
@@ -53,30 +48,35 @@ class ReadCreateRepositoryInterface(ABC, Generic[T, ID]):
         raise NotImplementedError
 
 
-class UserRepositoryInterface(CrudRepositoryInterface[User, UUID]):
-    pass
-
-
-class ClientRepositoryInterface(CrudRepositoryInterface[Client, UUID]):
-    pass
-
-
-class OperatorRepositoryInterface(CrudRepositoryInterface[Operator, UUID]):
-    pass
-
-
-class ConversationRepositoryInterface(CrudRepositoryInterface[Conversation, UUID]):
-    pass
-
-
-class MessageRepositoryInterface(ReadCreateRepositoryInterface[Message, UUID]):
+class UserRepositoryInterface(CrudRepositoryInterface[User, str]):
     @abstractmethod
-    def list_by_conversation(self, conversation_id: UUID) -> list[Message]:
+    def get(self, user_id: ID | None = None, name: str | None = None, offset: int = 1, limit: int = 100) -> T | list[T]:
+        raise NotImplementedError
+
+    @abstractmethod
+    def delete(self, operator_id):
         raise NotImplementedError
 
 
-class AttachmentRepositoryInterface(CrudRepositoryInterface[Attachment, UUID]):
+class ClientRepositoryInterface(CrudRepositoryInterface[Client, str]):
+    pass
+
+
+class OperatorRepositoryInterface(CrudRepositoryInterface[Operator, str]):
+    pass
+
+
+class ConversationRepositoryInterface(CrudRepositoryInterface[Conversation, str]):
+    def get(self, conversation_id: str | None = None, operator_id: str | None = None, client_id: str | None = None):
+        raise NotImplementedError
+
+
+class MessageRepositoryInterface(ReadCreateRepositoryInterface[Message, str]):
+    pass
+
+
+class AttachmentRepositoryInterface(CrudRepositoryInterface[Attachment, str]):
     @abstractmethod
-    def list_by_message(self, message_id: UUID) -> list[Attachment]:
+    def list_by_message(self, message_id: str) -> list[Attachment]:
         raise NotImplementedError
 

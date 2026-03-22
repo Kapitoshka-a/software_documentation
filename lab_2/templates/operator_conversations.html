@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — {{ user.name }}{% endblock %}
+
+{% block nav_links %}
+  <a href="/operator/{{ operator_id }}/conversations" class="active">Dashboard</a>
+  <a href="/operator/{{ operator_id }}/profile">Profile</a>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1>Dashboard</h1>
+    <div class="sub">
+      {{ user.name }} · {{ operator.department }} ·
+      <span style="color:var(--green);">{{ operator.current_status }}</span>
+    </div>
+  </div>
+  <div style="font-size:12px; color:var(--muted);">
+    Code: <strong style="color:var(--ink2);">{{ operator.operator_code }}</strong>
+    &nbsp;·&nbsp;
+    Max chats: <strong style="color:var(--ink2);">{{ operator.max_concurrent_chats }}</strong>
+  </div>
+</div>
+
+<!-- My conversations -->
+<div class="section-title">
+  My conversations
+  <span class="count-pill">{{ my_conversations | length }}</span>
+</div>
+
+{% if my_conversations %}
+<div class="card" style="overflow:hidden; margin-bottom:32px;">
+  <table>
+    <thead>
+      <tr><th>ID</th><th>Status</th><th>Priority</th><th>Client</th><th>Started</th><th></th></tr>
+    </thead>
+    <tbody>
+      {% for conv in my_conversations %}
+      <tr>
+        <td style="font-size:11px; color:var(--muted);">#{{ conv.id | string | truncate(8, True, '') }}</td>
+        <td><span class="badge badge-{{ conv.status }}">{{ conv.status }}</span></td>
+        <td><span class="badge badge-{{ conv.priority }}">{{ conv.priority }}</span></td>
+        <td style="font-size:12px; color:var(--muted);">{{ conv.client_id | string | truncate(8, True, '') }}</td>
+        <td style="font-size:12px; color:var(--muted);">{{ conv.started_at.strftime('%b %d, %H:%M') }}</td>
+        <td style="text-align:right;">
+          <a class="btn btn-secondary" style="padding:4px 11px; font-size:12px;"
+             href="/operator/{{ operator_id }}/conversations/{{ conv.id }}">Open →</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="empty" style="padding:28px 20px; margin-bottom:32px;">
+  <p>No active conversations assigned to you.</p>
+</div>
+{% endif %}
+
+<!-- Unassigned conversations -->
+<div class="section-title">
+  Unassigned
+  <span class="count-pill" style="background:var(--muted);">{{ unassigned_conversations | length }}</span>
+</div>
+
+{% if unassigned_conversations %}
+<div class="card" style="overflow:hidden;">
+  <table>
+    <thead>
+      <tr><th>ID</th><th>Priority</th><th>Client</th><th>Started</th><th></th></tr>
+    </thead>
+    <tbody>
+      {% for conv in unassigned_conversations %}
+      <tr>
+        <td style="font-size:11px; color:var(--muted);">#{{ conv.id | string | truncate(8, True, '') }}</td>
+        <td><span class="badge badge-{{ conv.priority }}">{{ conv.priority }}</span></td>
+        <td style="font-size:12px; color:var(--muted);">{{ conv.client_id | string | truncate(8, True, '') }}</td>
+        <td style="font-size:12px; color:var(--muted);">{{ conv.started_at.strftime('%b %d, %H:%M') }}</td>
+        <td style="text-align:right;">
+          <form method="POST"
+                action="/operator/{{ operator_id }}/conversations/{{ conv.id }}/assign"
+                style="display:inline;">
+            <button type="submit" class="btn btn-ghost" style="padding:4px 11px; font-size:12px;">
+              Assign to me
+            </button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="empty" style="padding:28px 20px;">
+  <p>No unassigned conversations right now.</p>
+</div>
+{% endif %}
+{% endblock %}

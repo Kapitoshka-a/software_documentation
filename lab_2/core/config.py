@@ -5,7 +5,7 @@ from typing import Iterator
 
 
 class Settings(BaseSettings):
-    DATABASE_URL: str
+    DATABASE_URL: str = "sqlite:///./support_chat.db"
     CSV_PATH: str = "./chat_data.csv"
 
     def get_engine(self) -> Engine:
