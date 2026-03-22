@@ -1,0 +1,60 @@
+@startuml
+abstract class User {
+- id: UUID
+- name: String
+- email: String
+- createdAt: DateTime
++ getDetails(): String
++ updateContactInfo(): void
+}
+class Client {
+- companyName: String
+- hubspotScore: Integer
+- subscriptionTier: String
++ getDetails(): String
++ initiateConversation(): Conversation
++ submitFeedback(): void
+}
+class Operator {
+- operatorId: String
+- department: String
+- currentStatus: String
+- maxConcurrentChats: Integer
++ getDetails(): String
++ assignConversation(c: Conversation): Boolean
++ transferConversation(c: Conversation, target: Operator): void
++ resolveConversation(c: Conversation): void
+}
+class Conversation {
+- conversationId: UUID
+- status: String
+- priority: String
+- startedAt: DateTime
+- closedAt: DateTime
++ addMessage(msg: Message): void
++ changeStatus(newStatus: String): void
++ assignTo(operator: Operator): void
++ generateTranscript(): String
+}
+class Message {
+- messageId: UUID
+- content: String
+- timestamp: DateTime
+- isRead: Boolean
++ markAsRead(): void
++ editMessage(newContent: String): void
+}
+class Attachment {
+- fileId: UUID
+- fileName: String
+- fileSize: Long
+- fileType: String
++ download(): void
+}
+User <|-- Client
+User <|-- Operator
+Client "1" -- "0..*" Conversation : initiates
+Operator "1" -- "0..*" Conversation : handles
+Conversation "1" *-- "1..*" Message : contains
+Message "1" *-- "0..*" Attachment : includes
+@enduml

@@ -1,0 +1,27 @@
+@startuml
+start
+:Client opens chat widget;
+:Chatbot asks for email and issue type;
+if (Can chatbot resolve the issue?) then (Yes)
+:Chatbot provides knowledge base article;
+:Client confirms resolution;
+else (No)
+:Client requests human operator;
+:System evaluates routing rules;
+if (Is matching Operator available?) then (Yes)
+:Assign Conversation to Operator;
+:Operator receives incoming chat notification;
+else (No)
+:Add Conversation to Department Queue;
+:Display wait time to Client;
+:Wait for Operator to become available;
+:Assign Conversation to Operator;
+endif
+:Operator joins chat session;
+:Operator and Client exchange messages;
+:Operator resolves issue;
+endif
+:Close Conversation;
+:Send CSAT Survey to Client;
+stop
+@enduml

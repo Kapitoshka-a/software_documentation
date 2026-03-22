@@ -1,0 +1,28 @@
+@startuml
+actor "Client" as Client
+participant "System" as System
+actor "Chatbot" as Bot
+actor "Operator 1" as Op1
+actor "Operator 2" as Op2
+
+Client -> System: Create request
+activate System
+System -> Bot: Assign Conversation
+activate Bot
+Bot -> Client: Automated reply
+Client -> Bot: Request human operator
+Bot -> System: Request transfer to operator
+deactivate Bot
+System -> Op1: Assign Conversation
+activate Op1
+Op1 -> Client: Reply to client
+Op1 -> System: Request transfer to another operator
+System -> Op2: Assign Conversation
+deactivate Op1
+activate Op2
+Op2 -> Client: Resolve issue
+Op2 -> System: Close Conversation
+deactivate Op2
+System -> Client: Resolution notification
+deactivate System
+@enduml
