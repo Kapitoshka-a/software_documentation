@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}My Conversations — {{ client.company_name }}{% endblock %}
+
+{% block nav_links %}
+  <a href="/client/{{ client.id }}/conversations">Conversations</a>
+  <a href="/client/{{ client.id }}/profile">Profile</a>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1>Conversations</h1>
+    <p style="color:var(--muted); margin-top:4px; font-size:13px;">{{ client.company_name }}</p>
+  </div>
+
+  <!-- New conversation trigger -->
+  <button class="btn btn-primary" onclick="document.getElementById('new-conv-modal').style.display='flex'">
+    + New conversation
+  </button>
+</div>
+
+{% if conversations %}
+<div class="card" style="padding:0; overflow:hidden;">
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Status</th>
+        <th>Priority</th>
+        <th>Started</th>
+        <th>Operator</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for conv in conversations %}
+      <tr>
+        <td style="font-size:11px; color:var(--muted);">{{ conv.id | string | truncate(12, True, '') }}</td>
+        <td><span class="badge badge-{{ conv.status }}">{{ conv.status }}</span></td>
+        <td><span class="badge badge-{{ conv.priority }}">{{ conv.priority }}</span></td>
+        <td style="color:var(--muted); font-size:12px;">{{ conv.started_at.strftime('%b %d, %H:%M') }}</td>
+        <td>
+          {% if conv.operator_id %}
+            <span style="color:var(--accent2); font-size:12px;">assigned</span>
+          {% else %}
+            <span class="badge badge-unassigned">waiting</span>
+          {% endif %}
+        </td>
+        <td style="text-align:right;">
+          <a class="btn btn-secondary" style="padding:5px 12px; font-size:12px;"
+             href="/client/{{ client.id }}/conversations/{{ conv.id }}">
+            Open →
+          </a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="empty">
+  <div class="empty-icon">💬</div>
+  <p>No conversations yet.<br>Start one with the button above.</p>
+</div>
+{% endif %}
+
+<!-- New Conversation Modal -->
+<div id="new-conv-modal" class="modal-panel" style="display:none;"
+     onclick="if(event.target===this) this.style.display='none'">
+  <div class="modal-box">
+    <h2>New Conversation</h2>
+    <p style="color:var(--muted); font-size:13px; margin-bottom:20px;">
+      Your request will be assigned to an available operator shortly.
+    </p>
+    <form method="POST" action="/client/{{ client.id }}/conversations/new">
+      <div class="form-group">
+        <label for="priority">Priority</label>
+        <select name="priority" id="priority" required>
+          <option value="low">Low</option>
+          <option value="medium" selected>Medium</option>
+          <option value="high">High</option>
+        </select>
+      </div>
+      <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:8px;">
+        <button type="button" class="btn btn-secondary"
+                onclick="document.getElementById('new-conv-modal').style.display='none'">
+          Cancel
+        </button>
+        <button type="submit" class="btn btn-primary">Create</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

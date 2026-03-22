@@ -1,5 +1,3 @@
-from uuid import UUID
-
 from sqlmodel import Session, select
 
 from core.errors import EntityNotFoundError, EntityAlreadyExistsError
@@ -20,14 +18,11 @@ class ClientRepository(ClientRepositoryInterface):
         self._session.refresh(client)
         return client
 
-    def get(self, client_id: UUID | None = None, offset: int = 1, limit: int = 100) -> Client | list[Client]:
+    def get(self, client_id: str | None = None, offset: int = 1, limit: int = 100) -> Client | list[Client]:
         statement = select(Client)
         if client_id:
             statement = statement.where(Client.id == client_id)
-            client = self._session.exec(statement).first()
-            if not client:
-                raise EntityNotFoundError("Client", client_id)
-            return client
+            return self._session.exec(statement).first()
         statement = statement.offset((offset - 1) * limit).limit(limit)
         return list(self._session.exec(statement).all())
 
@@ -39,10 +34,3 @@ class ClientRepository(ClientRepositoryInterface):
         self._session.commit()
         self._session.refresh(merged)
         return merged
-
-    def delete(self, client_id: UUID) -> None:
-        client = self._session.get(Client, client_id)
-        if client is None:
-            raise EntityNotFoundError("Client", client_id)
-        self._session.delete(client)
-        self._session.commit()

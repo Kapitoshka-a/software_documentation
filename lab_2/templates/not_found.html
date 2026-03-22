@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Not Found{% endblock %}
+{% block content %}
+<div style="text-align:center; padding: 80px 20px;">
+  <div style="font-family:var(--font-head); font-size:64px; color:var(--border2); margin-bottom:16px; font-style:italic;">404</div>
+  <h2 style="font-family:var(--font-head); font-size:22px; color:var(--ink); margin-bottom:10px;">Account not found</h2>
+  <p style="color:var(--muted); font-size:13px; max-width:340px; margin:0 auto 28px;">
+    {{ message or "This account does not exist or may have been deleted." }}
+  </p>
+  <a href="/" class="btn btn-secondary">← Back to login</a>
+</div>
+{% endblock %}

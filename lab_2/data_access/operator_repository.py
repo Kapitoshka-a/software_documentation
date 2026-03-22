@@ -1,5 +1,3 @@
-from uuid import UUID
-
 from sqlmodel import Session, select
 
 from core.errors import EntityNotFoundError, EntityAlreadyExistsError
@@ -20,14 +18,11 @@ class OperatorRepository(OperatorRepositoryInterface):
         self._session.refresh(operator)
         return operator
 
-    def get(self, operator_id: UUID | None = None, offset: int = 1, limit: int = 100) -> Operator | list[Operator]:
+    def get(self, operator_id: str | None = None, offset: int = 1, limit: int = 100) -> Operator | list[Operator]:
         statement = select(Operator)
         if operator_id:
             statement = statement.where(Operator.id == operator_id)
-            operator = self._session.exec(statement).first()
-            if not operator:
-                raise EntityNotFoundError("Operator", operator_id)
-            return operator
+            return self._session.exec(statement).first()
         statement = statement.offset((offset - 1) * limit).limit(limit)
         return list(self._session.exec(statement).all())
 
@@ -39,10 +34,3 @@ class OperatorRepository(OperatorRepositoryInterface):
         self._session.commit()
         self._session.refresh(merged)
         return merged
-
-    def delete(self, operator_id: UUID) -> None:
-        operator = self._session.get(Operator, operator_id)
-        if operator is None:
-            raise EntityNotFoundError("Operator", operator_id)
-        self._session.delete(operator)
-        self._session.commit()

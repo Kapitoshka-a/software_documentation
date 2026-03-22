@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block title %}Profile — {{ user.name }}{% endblock %}
+
+{% block nav_links %}
+  <a href="/client/{{ client.id }}/conversations">Conversations</a>
+  <a href="/client/{{ client.id }}/profile" class="active">Profile</a>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>My Profile</h1>
+  <div style="display:flex; gap:8px;">
+    <button class="btn btn-secondary"
+            onclick="document.getElementById('edit-modal').style.display='flex'">
+      Edit info
+    </button>
+    <button class="btn btn-danger"
+            onclick="document.getElementById('delete-modal').style.display='flex'">
+      Delete account
+    </button>
+  </div>
+</div>
+
+<div class="card" style="padding:24px; margin-bottom:20px;">
+  <div class="section-title">Account</div>
+  <div class="profile-grid">
+    <div class="profile-field">
+      <span class="field-label">Full name</span>
+      <span class="field-value">{{ user.name }}</span>
+    </div>
+    <div class="profile-field">
+      <span class="field-label">Email</span>
+      <span class="field-value">{{ user.email }}</span>
+    </div>
+    <div class="profile-field">
+      <span class="field-label">Member since</span>
+      <span class="field-value" style="font-size:13px; color:var(--muted);">
+        {{ user.created_at.strftime('%B %d, %Y') }}
+      </span>
+    </div>
+    <div class="profile-field">
+      <span class="field-label">User ID</span>
+      <span class="field-value" style="font-size:11px; color:var(--muted);">{{ user.id }}</span>
+    </div>
+  </div>
+</div>
+
+<div class="card" style="padding:24px;">
+  <div class="section-title">Client details</div>
+  <div class="profile-grid">
+    <div class="profile-field">
+      <span class="field-label">Company</span>
+      <span class="field-value">{{ client.company_name }}</span>
+    </div>
+    <div class="profile-field">
+      <span class="field-label">Subscription tier</span>
+      <span class="field-value">{{ client.subscription_tier }}</span>
+    </div>
+    <div class="profile-field">
+      <span class="field-label">HubSpot score</span>
+      <span class="field-value">{{ client.hubspot_score }}</span>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Modal -->
+<div id="edit-modal" class="modal-panel" style="display:none;"
+     onclick="if(event.target===this) this.style.display='none'">
+  <div class="modal-box">
+    <h2>Edit Contact Info</h2>
+    <form method="POST" action="/client/{{ client.id }}/profile/update">
+      <div class="form-group">
+        <label>Full name</label>
+        <input type="text" name="name" value="{{ user.name }}" required />
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" name="email" value="{{ user.email }}" required />
+      </div>
+      <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:4px;">
+        <button type="button" class="btn btn-secondary"
+                onclick="document.getElementById('edit-modal').style.display='none'">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Delete Modal -->
+<div id="delete-modal" class="modal-panel" style="display:none;"
+     onclick="if(event.target===this) this.style.display='none'">
+  <div class="modal-box">
+    <h2 style="color:#b53030;">Delete account?</h2>
+    <p style="color:var(--muted); font-size:12.5px; margin-bottom:22px; line-height:1.65;">
+      This permanently deletes your account and all associated data.
+      This action <strong style="color:var(--ink);">cannot be undone</strong>.
+    </p>
+    <form method="POST" action="/client/{{ client.id }}/delete">
+      <div style="display:flex; gap:8px; justify-content:flex-end;">
+        <button type="button" class="btn btn-secondary"
+                onclick="document.getElementById('delete-modal').style.display='none'">Cancel</button>
+        <button type="submit" class="btn btn-danger">Delete permanently</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
