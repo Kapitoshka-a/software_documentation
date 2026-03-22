@@ -57,7 +57,7 @@ def operator_profile(
     )
 
 
-@router.post("/{operator_id}/profile/update")
+@router.put("/{operator_id}/profile")
 def operator_profile_update(
     operator_id: str,
     name: str = Form(...),
@@ -68,12 +68,12 @@ def operator_profile_update(
     return RedirectResponse(url=f"/operator/{operator_id}/profile", status_code=303)
 
 
-@router.post("/{operator_id}/delete")
+@router.delete("/{operator_id}")
 def operator_delete(
     operator_id: str,
     user_ctrl: UserController = Depends(get_user_controller),
 ):
-    user_ctrl._user_repository.delete(operator_id)
+    user_ctrl._user_repository.delete(operator_id=operator_id)
     return RedirectResponse(url="/", status_code=303)
 
 

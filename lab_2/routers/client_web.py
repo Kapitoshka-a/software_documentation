@@ -148,7 +148,7 @@ def client_profile(
     )
 
 
-@router.post("/{client_id}/profile/update")
+@router.put("/{client_id}/profile")
 def client_profile_update(
     client_id: str,
     name: str = Form(...),
@@ -159,10 +159,10 @@ def client_profile_update(
     return RedirectResponse(url=f"/client/{client_id}/profile", status_code=303)
 
 
-@router.post("/{client_id}/delete")
+@router.delete("/{client_id}")
 def client_delete(
     client_id: str,
     client_ctrl: ClientController = Depends(get_client_controller),
 ):
-    client_ctrl.delete_client(client_id)
+    client_ctrl.delete_client(client_id=client_id)
     return RedirectResponse(url="/", status_code=303)

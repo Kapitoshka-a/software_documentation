@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Depends
+from starlette.middleware.cors import CORSMiddleware
 
 from controllers import MessageController
 from core.config import settings
@@ -12,6 +13,18 @@ app = FastAPI()
 @app.get("/health")
 def health():
     return 200
+
+origins = [
+    "http://127.0.0.1:8000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/messages")
