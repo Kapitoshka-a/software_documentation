@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}Conversation #{{ conversation.id | string | truncate(8, True, '') }}{% endblock %}
+
+{% block nav_links %}
+  <a href="/operator/{{ operator.id }}/conversations">← Dashboard</a>
+  <a href="/operator/{{ operator.id }}/profile">Profile</a>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1>Conversation</h1>
+    <div style="display:flex; gap:7px; align-items:center; margin-top:5px;">
+      <span class="badge badge-{{ conversation.status }}">{{ conversation.status }}</span>
+      <span class="badge badge-{{ conversation.priority }}">{{ conversation.priority }}</span>
+      <span style="font-size:10.5px; color:var(--muted);">{{ conversation.id }}</span>
+    </div>
+  </div>
+  {% if conversation.status != 'closed' %}
+  <form method="POST"
+        action="/operator/{{ operator.id }}/conversations/{{ conversation.id }}/resolve">
+    <button type="submit" class="btn btn-danger">✓ Resolve</button>
+  </form>
+  {% else %}
+  <span class="badge badge-closed" style="padding:6px 12px; font-size:12px;">Resolved</span>
+  {% endif %}
+</div>
+
+<div style="font-size:12px; color:var(--muted); margin-bottom:16px;">
+  Client: <strong style="color:var(--ink2);">{{ conversation.client_id }}</strong>
+  · Started: {{ conversation.started_at.strftime('%b %d %Y, %H:%M') }}
+  {% if conversation.closed_at %}
+  · Resolved: {{ conversation.closed_at.strftime('%b %d %Y, %H:%M') }}
+  {% endif %}
+</div>
+
+<!-- Legend -->
+<div style="display:flex; gap:16px; margin-bottom:10px; font-size:11px; color:var(--muted);">
+  <span>
+    <span style="display:inline-block; width:10px; height:10px; border-radius:2px;
+                 background:var(--accent); vertical-align:middle; margin-right:4px;"></span>
+    Client
+  </span>
+  <span>
+    <span style="display:inline-block; width:10px; height:10px; border-radius:2px;
+                 background:var(--surface); border:1px solid var(--border);
+                 vertical-align:middle; margin-right:4px;"></span>
+    You (operator)
+  </span>
+</div>
+
+<div class="chat-window" id="chat-window">
+  {% set all_messages = (client_messages + operator_messages) | sort(attribute='timestamp') %}
+  {% if all_messages %}
+    {% for msg in all_messages %}
+      {% if msg.sender_role == 'client' %}
+      <div class="msg-client">
+        <div class="bubble">{{ msg.content }}</div>
+        <div class="meta">
+          <span class="who">Client</span>
+          <span>{{ msg.timestamp.strftime('%H:%M') }}</span>
+        </div>
+      </div>
+      {% else %}
+      <div class="msg-operator">
+        <div class="bubble">{{ msg.content }}</div>
+        <div class="meta">
+          <span class="who">You</span>
+          <span>{{ msg.timestamp.strftime('%H:%M') }}</span>
+          {% if msg.is_read %}<span>· read</span>{% endif %}
+        </div>
+      </div>
+      {% endif %}
+    {% endfor %}
+  {% else %}
+    <div style="margin:auto; color:var(--muted); font-style:italic;
+                font-family:var(--font-head); font-size:14px; text-align:center;">
+      No messages yet.
+    </div>
+  {% endif %}
+</div>
+
+{% if conversation.status != 'closed' %}
+<form method="POST"
+      action="/operator/{{ operator.id }}/conversations/{{ conversation.id }}/send">
+  <div class="chat-input-row">
+    <textarea name="content" placeholder="Reply to client…" required
+              onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();this.form.submit();}"></textarea>
+    <button type="submit" class="btn btn-primary" style="height:44px;">Send ↑</button>
+  </div>
+  <p style="color:var(--muted); font-size:10.5px; margin-top:5px;">Enter to send · Shift+Enter for new line</p>
+</form>
+{% else %}
+<div style="text-align:center; padding:14px; color:var(--muted); font-size:12.5px; margin-top:12px;
+            border:1px dashed var(--border); border-radius:var(--radius);
+            font-family:var(--font-head); font-style:italic;">
+  This conversation has been resolved.
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_head %}
+<script>
+  window.addEventListener('load', function() {
+    var cw = document.getElementById('chat-window');
+    if (cw) cw.scrollTop = cw.scrollHeight;
+  });
+</script>
+{% endblock %}

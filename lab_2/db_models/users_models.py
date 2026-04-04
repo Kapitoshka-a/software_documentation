@@ -7,15 +7,16 @@ from sqlmodel import Field, SQLModel
 class User(SQLModel, table=True):
     __tablename__ = "users"
 
-    id: UUID = Field(default_factory=uuid4, primary_key=True)
+    id: str = Field(default_factory=uuid4, primary_key=True)
     name: str
     email: str
     created_at: datetime
+    is_deleted: bool = False
 
 class Client(SQLModel, table=True):
     __tablename__ = "clients"
 
-    id: UUID = Field(foreign_key="users.id", primary_key=True)
+    id: str = Field(foreign_key="users.id", primary_key=True)
     company_name: str
     hubspot_score: int
     subscription_tier: str
@@ -23,7 +24,7 @@ class Client(SQLModel, table=True):
 class Operator(SQLModel, table=True):
     __tablename__ = "operators"
 
-    id: UUID = Field(foreign_key="users.id", primary_key=True)
+    id: str = Field(foreign_key="users.id", primary_key=True)
     operator_code: str
     department: str
     current_status: str

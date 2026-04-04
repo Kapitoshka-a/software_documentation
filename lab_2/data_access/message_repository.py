@@ -1,5 +1,3 @@
-from uuid import UUID
-
 from sqlmodel import Session, select
 
 from core.errors import EntityNotFoundError, EntityAlreadyExistsError
@@ -20,17 +18,22 @@ class MessageRepository(MessageRepositoryInterface):
         self._session.refresh(message)
         return message
 
-    def get(self, message_id: UUID | None = None, offset: int = 1, limit: int = 100) -> Message | list[Message]:
-        statement = select(Message)
+    def get(
+            self,
+            message_id: str | None = None,
+            conversation_id: str | None = None,
+            sender_role: str | None = None,
+            offset: int = 1,
+            limit: int = 100
+    ) -> Message | list[Message]:
+        statement = select(Message).where(*(
+            Message.id == message_id if message_id else True,
+            Message.conversation_id == conversation_id if conversation_id else True,
+            Message.sender_role == sender_role if sender_role else True
+        ))
         if message_id:
-            statement = statement.where(Message.id == message_id)
-            message = self._session.exec(statement).first()
-            if not message:
-                raise EntityNotFoundError("Message", message_id)
-            return message
+            return  self._session.exec(statement).first()
+
         statement = statement.offset((offset - 1) * limit).limit(limit)
         return list(self._session.exec(statement).all())
 
-    def list_by_conversation(self, conversation_id: UUID) -> list[Message]:
-        statement = select(Message).where(Message.conversation_id == conversation_id)
-        return list(self._session.exec(statement).all())

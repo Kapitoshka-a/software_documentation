@@ -1,5 +1,3 @@
-from uuid import UUID
-
 from sqlmodel import Session, select
 
 from core.errors import EntityNotFoundError, EntityAlreadyExistsError
@@ -21,7 +19,7 @@ class AttachmentRepository(AttachmentRepositoryInterface):
         return attachment
 
     def get(
-        self, attachment_id: UUID | None = None, offset: int = 1, limit: int = 100
+        self, attachment_id: str | None = None, offset: int = 1, limit: int = 100
     ) -> Attachment | list[Attachment]:
         statement = select(Attachment)
         if attachment_id:
@@ -42,13 +40,13 @@ class AttachmentRepository(AttachmentRepositoryInterface):
         self._session.refresh(merged)
         return merged
 
-    def delete(self, attachment_id: UUID) -> None:
+    def delete(self, attachment_id: str) -> None:
         attachment = self._session.get(Attachment, attachment_id)
         if attachment is None:
             raise EntityNotFoundError("Attachment", attachment_id)
         self._session.delete(attachment)
         self._session.commit()
 
-    def list_by_message(self, message_id: UUID) -> list[Attachment]:
+    def list_by_message(self, message_id: str) -> list[Attachment]:
         statement = select(Attachment).where(Attachment.message_id == message_id)
         return list(self._session.exec(statement).all())
