@@ -8,6 +8,13 @@ class Settings(BaseSettings):
     DATABASE_URL: str = "sqlite:///./support_chat.db"
     CSV_PATH: str = "./chat_data.csv"
 
+    EXPORTER_STRATEGY: str = "kafka"
+    EXPORTER_DATA_FILE: str = "data.json"
+    REDIS_HOST: str = "localhost"
+    REDIS_PORT: int = 6379
+    KAFKA_BOOTSTRAP_SERVERS: str = "localhost:9092"
+    KAFKA_TOPIC: str = "support_chat"
+
     def get_engine(self) -> Engine:
         return create_engine(self.DATABASE_URL)
 
@@ -18,7 +25,7 @@ class Settings(BaseSettings):
     def create_db_and_tables(self) -> None:
         SQLModel.metadata.create_all(self.get_engine())
 
-    class Config:
+    class ConfigDict:
         env_file = ".env"
 
 
