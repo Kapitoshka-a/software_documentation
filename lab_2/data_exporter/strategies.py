@@ -18,13 +18,14 @@ class ConsoleStrategy(StorageStrategy):
 
 
 class RedisStrategy(StorageStrategy):
-    def __init__(self, host, port):
+    def __init__(self, host: str, port: int, namespace: str):
         self.client = redis.Redis(host=host, port=port)
+        self.namespace = namespace
 
     def write(self, data: list):
         print(f"[REDIS] exporting {len(data)} rows to redis...")
         for row in data:
-            self.client.rpush('salary_data', json.dumps(row))
+            self.client.rpush(self.namespace, json.dumps(row))
 
 
 class KafkaStrategy(StorageStrategy):

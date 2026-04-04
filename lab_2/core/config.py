@@ -8,10 +8,11 @@ class Settings(BaseSettings):
     DATABASE_URL: str = "sqlite:///./support_chat.db"
     CSV_PATH: str = "./chat_data.csv"
 
-    EXPORTER_STRATEGY: str = "kafka"
+    EXPORTER_STRATEGY: str = "redis"
     EXPORTER_DATA_FILE: str = "data.json"
     REDIS_HOST: str = "localhost"
     REDIS_PORT: int = 6379
+    REDIS_NAMESPACE: str = "support_chat"
     KAFKA_BOOTSTRAP_SERVERS: str = "localhost:9092"
     KAFKA_TOPIC: str = "support_chat"
 

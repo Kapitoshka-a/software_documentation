@@ -14,7 +14,7 @@ def main():
     if storage_type == "console":
         strategy = ConsoleStrategy()
     elif storage_type == "redis":
-        strategy = RedisStrategy(host=settings.REDIS_HOST, port=settings.REDIS_PORT)
+        strategy = RedisStrategy(host=settings.REDIS_HOST, port=settings.REDIS_PORT, namespace=settings.REDIS_NAMESPACE)
     elif storage_type == "kafka":
         strategy = KafkaStrategy(bootstrap_servers=settings.KAFKA_BOOTSTRAP_SERVERS, topic=settings.KAFKA_TOPIC)
     else:
